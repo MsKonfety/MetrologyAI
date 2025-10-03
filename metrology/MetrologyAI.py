@@ -25,11 +25,11 @@ class MetrologyAI(QMainWindow):
         self.setWindowTitle("Metrology AI")
         self.setGeometry(100, 100, 1200, 800)
         
-        # Центральный виджет
+        # основной экран
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
-        # Основной layout
+        # основной layout
         main_layout = QHBoxLayout()
         central_widget.setLayout(main_layout)
         
@@ -41,7 +41,7 @@ class MetrologyAI(QMainWindow):
         self.video_label.setMinimumSize(800, 600)
         self.video_label.setAlignment(Qt.AlignCenter)
         self.video_label.setText("Видеопоток не запущен")
-        self.video_label.setStyleSheet("border: 2px solid gray; background-color: #f0f0f0;")
+        self.video_label.setStyleSheet("border: 2px solid gray; background-color: #1e1e1e;")
         left_layout.addWidget(self.video_label)
         
         # кнопки
@@ -198,7 +198,7 @@ class MetrologyAI(QMainWindow):
         # Создание QImage
         qt_image = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888)
         
-        # Масштабирование изображения под размер метки
+        # Масштабирование изображения
         pixmap = QPixmap.fromImage(qt_image)
         scaled_pixmap = pixmap.scaled(self.video_label.width(), 
                                     self.video_label.height(), 
@@ -312,5 +312,6 @@ window = MetrologyAI()
 window.show()
     
 sys.exit(app.exec_())
+
 
 

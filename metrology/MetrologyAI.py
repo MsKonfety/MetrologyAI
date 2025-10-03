@@ -1,7 +1,6 @@
 import sys
 import json
 import cv2
-import numpy as np
 from datetime import datetime
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, 
                              QPushButton, QLabel, QWidget, QTextEdit)
@@ -313,4 +312,5 @@ window = MetrologyAI()
 window.show()
     
 sys.exit(app.exec_())
+
 

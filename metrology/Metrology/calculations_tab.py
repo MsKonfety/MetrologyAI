@@ -13,6 +13,8 @@ class CalculationsTab(QWidget):
         self.center_y_data = []
 
         self.last_update_time = None
+        self.frame_width = 600  # начальные размеры
+        self.frame_height = 400
 
         self.setup_ui()
         self.start_time = datetime.now().timestamp()
@@ -63,11 +65,9 @@ class CalculationsTab(QWidget):
         self.center_plot_widget.setMouseEnabled(x=False, y=False)
         self.center_plot_widget.setLimits(xMin=0, yMin=0)
         
-        # Настройка осей для отображения координат
-        self.center_plot_widget.setXRange(0, 600)
-        self.center_plot_widget.setYRange(0, 400)
-        self.center_plot_widget.invertY(True)  # ось Y инвертирована
-
+        # Начальные настройки осей (будут обновляться при получении данных)
+        self.update_center_axes()
+        
         # График для положения центра
         self.center_line = self.center_plot_widget.plot(
             pen=pg.mkPen(color='#4CAF50', width=1, style=pg.QtCore.Qt.DashLine)
@@ -81,12 +81,34 @@ class CalculationsTab(QWidget):
             symbol='o'
         )
         self.center_plot_widget.addItem(self.center_scatter)
+    
+    def update_center_axes(self):
+        """Обновление осей графика положения центра в соответствии с размером кадра"""
+        if hasattr(self, 'frame_width') and hasattr(self, 'frame_height'):
+            # Устанавливаем диапазоны осей с небольшим запасом
+            x_margin = self.frame_width * 0.05
+            y_margin = self.frame_height * 0.05
+            
+            self.center_plot_widget.setXRange(-x_margin, self.frame_width + x_margin)
+            self.center_plot_widget.setYRange(-y_margin, self.frame_height + y_margin)
+            self.center_plot_widget.invertY(True)  # ось Y инвертирована
+    
+    def update_frame_size(self, width, height):
+        """Обновление размера кадра для адаптации графика"""
+        self.frame_width = width
+        self.frame_height = height
+        self.update_center_axes()
         
-        
-    def update_graph(self, area, center_x, center_y, timestamp):
+    def update_graph(self, area, center_x, center_y, timestamp, frame_width=None, frame_height=None):
         """Обновление графиков"""
+        # Обновляем размеры кадра если они предоставлены
+        if frame_width is not None and frame_height is not None:
+            self.update_frame_size(frame_width, frame_height)
+            
         if area is not None and area > 0 and center_x is not None and center_y is not None:
             current_time = timestamp.timestamp()
+            
+            # Обновляем данные только раз в секунду
             if self.last_update_time is None or (current_time - self.last_update_time) >= 1.0:
                 if self.time_data:
                     time_offset = (current_time - self.start_time)
@@ -110,9 +132,7 @@ class CalculationsTab(QWidget):
                     # данные для точек
                     self.center_scatter.setData(self.center_x_data, self.center_y_data)
 
-                print(f"Добавлена точка: время={time_offset:.1f}с, площадь={area}, центр=({center_x},{center_y})")
-
-                # Автомасштабирование графика площади
+                # Автомасштабирование графика площади (только если данных достаточно)
                 if len(self.time_data) > 1:
                     self.area_plot_widget.setXRange(0, max(self.time_data) * 1.1)
                     self.area_plot_widget.setYRange(0, max(self.area_data) * 1.1)

@@ -430,7 +430,7 @@ class MetrologyAI(QMainWindow):
         self.visualization_tab.video_label.clear()
         self.visualization_tab.video_label.setText("Видеопоток остановлен")
         self.visualization_tab.video_label.setStyleSheet(
-            "border: 2px solid gray; background-color: #f8f8f8; color: black;"
+            "border: 2px solid gray; background-color: #1e1e1e; color: white;"
         )
 
         # Очистка информации о детектировании

@@ -2,10 +2,12 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from main_window import MetrologyAI
 
+
 def main():
     app = QApplication(sys.argv)
-    
-    app.setStyleSheet("""
+
+    app.setStyleSheet(
+        """
         QMainWindow {
             background-color: #2b2b2b;
             color: white;
@@ -47,12 +49,14 @@ def main():
         QTabBar::tab:hover {
             background-color: #555;
         }
-        """)
-    
+        """
+    )
+
     window = MetrologyAI()
     window.show()
-    
+
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main()

@@ -32,7 +32,7 @@ class CalculationsTab(QWidget):
         self.smoothed_center_y_data = []
 
         self.last_update_time = None
-        self.frame_width = 600  # начальные размеры
+        self.frame_width = 600
         self.frame_height = 400
 
         self.setup_ui()
@@ -56,16 +56,16 @@ class CalculationsTab(QWidget):
         graphs_layout.addWidget(self.center_plot_widget)
 
     def setup_area_graph(self):
-        """Настройка графика площади"""
+        """Настройка графика расстояния"""
         self.area_plot_widget = pg.PlotWidget()
 
         self.area_plot_widget.setBackground("#1e1e1e")
 
-        self.area_plot_widget.setLabel("left", "Площадь", "кв.см")
+        self.area_plot_widget.setLabel("left", "Расстояние", "см")
         self.area_plot_widget.setLabel("bottom", "Время", "секунды")
         self.area_plot_widget.showGrid(x=True, y=True, alpha=0.3)
         self.area_plot_widget.setTitle(
-            "Изменение площади объекта", color="white", size="12pt"
+            "Изменение расстояния до объекта", color="white", size="12pt"
         )
 
         self.area_plot_widget.setMouseEnabled(x=True, y=False)
@@ -155,28 +155,17 @@ class CalculationsTab(QWidget):
             # Применяем скользящее окно к данным
             if len(self.area_data) >= 3:  # Минимум 3 точки для сглаживания
                 self.smoothed_area_data = SlidingWindow(self.area_data, 5)
-                self.smoothed_center_x_data = SlidingWindow(self.center_x_data, 5)
-                self.smoothed_center_y_data = SlidingWindow(self.center_y_data, 5)
             else:
                 # Если точек недостаточно, используем исходные данные
                 self.smoothed_area_data = self.area_data.copy()
-                self.smoothed_center_x_data = self.center_x_data.copy()
-                self.smoothed_center_y_data = self.center_y_data.copy()
 
             # Обновляем график площади (используем сглаженные данные)
             self.area_plot_curve.setData(self.time_data, self.smoothed_area_data)
 
             # Обновляем график положения центра (используем сглаженные данные)
-            if (
-                len(self.smoothed_center_x_data) > 0
-                and len(self.smoothed_center_y_data) > 0
-            ):
-                self.center_line.setData(
-                    self.smoothed_center_x_data, self.smoothed_center_y_data
-                )
-                self.center_scatter.setData(
-                    self.smoothed_center_x_data, self.smoothed_center_y_data
-                )
+            if len(self.center_x_data) > 0 and len(self.center_y_data) > 0:
+                self.center_line.setData(self.center_x_data, self.center_y_data)
+                self.center_scatter.setData(self.center_x_data, self.center_y_data)
 
             # Автомасштабирование только если данных достаточно
             if len(self.time_data) > 1:

@@ -1,10 +1,7 @@
 from PyQt5.QtCore import QThread, pyqtSignal, QMutex, pyqtSlot
 from datetime import datetime
 import cv2
-
-
 from tracker import MyTracker
-
 import time
 
 
@@ -98,7 +95,6 @@ class ProcessingWorker(QThread):
                         self.current_bbox = tracked_bbox
                         bbox = tracked_bbox
                         distance = self.current_distance
-                        # print(f"Трекинг: {bbox}")  # Можно раскомментировать для отладки
                     except Exception as e:
                         print(f"Ошибка трекера: {e}")
                         self.tracker = None

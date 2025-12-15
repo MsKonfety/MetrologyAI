@@ -36,12 +36,9 @@ class MetrologyAI(QMainWindow):
             "50",
             "70",
             "90",
-            "MY_data",
         ]
 
-        self.classification_model_path = (
-            "phone_fast_created_merged_data_resnet18_multilabel.pth"
-        )
+        self.classification_model_path = "best_resnet18_with_bbox_multilabel.pth"
         self.classification_model = ClassificationModel(
             self.classification_model_path, self.distance_class_names
         )
@@ -224,7 +221,6 @@ class MetrologyAI(QMainWindow):
 
             # Обновление информации о детектировании
             detection_info = {"bbox": bbox, "distance": distance}
-            self.visualization_tab.update_detection_info(detection_info)
         except Exception as e:
             print(f"Ошибка отображения кадра: {e}")
 
@@ -245,14 +241,19 @@ class MetrologyAI(QMainWindow):
                 area = w * h
                 center_x = x + w // 2
                 center_y = y + h // 2
-
+                self.visualization_tab.update_detection_info(
+                    {
+                        "bbox": detection_info["bbox"],
+                        "distance": detection_info["distance"],
+                    }
+                )
                 if self.video_stream:
                     frame_width, frame_height = self.video_stream.get_frame_size()
                 else:
                     frame_width, frame_height = 640, 480
 
                 self.calculations_tab.update_graph(
-                    area,
+                    detection_info["distance"],
                     center_x,
                     center_y,
                     current_time,
@@ -270,14 +271,13 @@ class MetrologyAI(QMainWindow):
                 and detection_info["bbox"] is not None
             ):
                 x, y, w, h = detection_info["bbox"]
-                area = w * h
+
                 distance = detection_info.get("distance", "неизвестно")
                 timestamp = detection_info["timestamp"].strftime("%H:%M:%S")
-                frame_counter = detection_info.get("frame_counter", 0)
 
                 log_entry = (
                     f"[{timestamp}] Объект: "
-                    f"pos=({x},{y}) size={w}x{h} area={area} px distance={distance}cm"
+                    f"pos=({x},{y}) size={w}x{h} distance={distance}cm"
                 )
                 self.add_to_log(log_entry)
 
@@ -310,7 +310,6 @@ class MetrologyAI(QMainWindow):
                 "timestamp": detection_info["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
                 "frame_counter": detection_info.get("frame_counter", 0),
                 "bbox": {"x": int(x), "y": int(y), "width": int(w), "height": int(h)},
-                "area": int(w * h),
                 "distance": detection_info.get("distance", "неизвестно"),
                 "center_x": int(x + w // 2),
                 "center_y": int(y + h // 2),

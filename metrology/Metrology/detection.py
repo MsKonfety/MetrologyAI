@@ -55,14 +55,14 @@ class DetectionProcessor:
 
             if predicted_class:
                 distance_str = "".join(filter(str.isdigit, predicted_class))
-                distance = int(distance_str) if distance_str else 100
+                distance = int(distance_str) if distance_str else 0
                 print(
                     f"Предсказано расстояние: {distance}см (уверенность: {confidence:.2%})"
                 )
                 return distance
             else:
-                return 100
+                return 0
 
         except Exception as e:
             print(f"Ошибка при предсказании расстояния: {e}")
-            return 100
+            return 0
